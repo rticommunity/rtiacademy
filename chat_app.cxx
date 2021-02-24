@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <string>
+#include <thread>
 using namespace std;
 
 #include <dds/dds.hpp>
@@ -12,6 +13,41 @@ using namespace dds::domain;
 using namespace dds::topic;
 using namespace dds::pub;
 using namespace dds::sub;
+
+
+
+int publisher_message()
+{
+    while (true) {
+        string input, command;
+        getline(cin, input);
+        stringstream ss(input);
+        getline(ss, command, ' ');
+
+        if (command == "send") {
+        
+        } else {
+            cout << "___Unsupported command" << endl;
+        }
+    }
+
+    return 0;
+}
+
+int publisher_userInfo()
+{
+    return 0;
+}
+
+int subscriber_message()
+{
+    return 0;
+}
+
+int subscriber_userInfo()
+{
+    return 0;
+}
 
 
 int main(int argc, char* argv[])
@@ -51,7 +87,19 @@ int main(int argc, char* argv[])
         DataWriter<ChatMessage> message_writer(Publisher(participant), message_topic,
                 qos_provider->datawriter_qos("Chat_Library::ChatMessage_Profile"));
 
+        // create threads
+        thread subscriber_thread_userInfo(subscriber_userInfo);
+        thread subscriber_thread_message(subscriber_message);
+        thread publisher_thread_userInfo(publisher_userInfo);
+        publisher_message();
+
+        // wait for threads to finish
+        publisher_thread_userInfo.join();
+        subscriber_thread_userInfo.join();
+        subscriber_thread_message.join();
+
     } catch (const exception& ex) {
         cout << "Exception " << ex.what() << endl;
     }
+    return 0;
 }
