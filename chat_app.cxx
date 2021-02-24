@@ -13,7 +13,9 @@ using namespace dds::domain;
 using namespace dds::topic;
 using namespace dds::pub;
 using namespace dds::sub;
-
+using namespace dds::sub::status;
+using namespace dds::sub::cond;
+using namespace dds::core::cond;
 
 
 int publisher_message(string& username, DataWriter<ChatMessage> message_writer)
@@ -48,12 +50,33 @@ int publisher_message(string& username, DataWriter<ChatMessage> message_writer)
     return 0;
 }
 
-int publisher_userInfo()
+int subscriber_message(DataReader<ChatMessage>& message_reader)
 {
+    ReadCondition read_condition(message_reader, DataState::any());
+    WaitSet waitset;
+    waitset.attach_condition(read_condition);
+
+    while (true) {
+        WaitSet::ConditionSeq active_conditions = waitset.wait(dds::core::Duration(60));
+        if (active_conditions.size() == 0) {
+            cout << "Timeout; no conditions were triggered\n";
+            continue;
+        }
+        for (int c = 0; c < active_conditions.size(); c++) {
+            if (active_conditions[c] == read_condition) {
+                LoanedSamples<ChatMessage> samples = message_reader.take();
+                for (auto sampleIt = samples.begin(); sampleIt != samples.end(); sampleIt++) {
+                    if (sampleIt->info().valid()) {
+                        cout << sampleIt->data().fromUser() << ": " << sampleIt->data().message() << endl;
+                    }
+                }
+            }
+        }
+    }
     return 0;
 }
 
-int subscriber_message()
+int publisher_userInfo()
 {
     return 0;
 }
@@ -103,7 +126,7 @@ int main(int argc, char* argv[])
 
         // create threads
         thread subscriber_thread_userInfo(subscriber_userInfo);
-        thread subscriber_thread_message(subscriber_message);
+        thread subscriber_thread_message(subscriber_message, message_reader);
         thread publisher_thread_userInfo(publisher_userInfo);
         publisher_message(username, message_writer);
 
