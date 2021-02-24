@@ -16,7 +16,7 @@ using namespace dds::sub;
 
 
 
-int publisher_message()
+int publisher_message(string& username, DataWriter<ChatMessage> message_writer)
 {
     while (true) {
         string input, command;
@@ -25,7 +25,21 @@ int publisher_message()
         getline(ss, command, ' ');
 
         if (command == "send") {
-        
+            // send username text text text
+            ChatMessage instance;
+            string destination;
+            string message;
+
+            getline(ss, destination, ' ');
+            getline(ss, message, '\n');
+
+            instance.fromUser(username);
+            instance.toUser(destination);
+            instance.message(message);
+
+            // write
+            message_writer.write(instance);
+
         } else {
             cout << "___Unsupported command" << endl;
         }
@@ -91,7 +105,7 @@ int main(int argc, char* argv[])
         thread subscriber_thread_userInfo(subscriber_userInfo);
         thread subscriber_thread_message(subscriber_message);
         thread publisher_thread_userInfo(publisher_userInfo);
-        publisher_message();
+        publisher_message(username, message_writer);
 
         // wait for threads to finish
         publisher_thread_userInfo.join();
