@@ -34,8 +34,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="USER_QOS_PROFILES.xml">
+    <Xml Include="chat_qos.xml">
       <Filter>Resource Files</Filter>
-    </None>
+    </Xml>
   </ItemGroup>
 </Project>

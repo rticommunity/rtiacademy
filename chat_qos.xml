@@ -6,7 +6,20 @@
 
     <qos_library name="Chat_Library">
 
-      <qos_profile name="ChatUser_Profile" base_name="BuiltinQoSLibExp::Pattern.Status">
+      <qos_profile name="Chat_Profile">
+      
+        <participant_qos>
+          <participant_name>
+            <name>ChatApp</name>
+          </participant_name>
+          <transport_builtin>
+            <mask>UDPv4</mask>
+          </transport_builtin>
+        </participant_qos>
+      
+      </qos_profile>
+      
+      <qos_profile name="ChatUser_Profile" base_name="BuiltinQosLibExp::Pattern.Status">
         
         <datareader_qos>
           <subscription_name>

@@ -286,7 +286,7 @@
     <ClInclude Include="chatPlugin.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="USER_QOS_PROFILES.xml" />
+    <Xml Include="chat_qos.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
