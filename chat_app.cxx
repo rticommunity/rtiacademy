@@ -20,6 +20,8 @@ using namespace dds::pub::qos;
 using namespace dds::sub::qos;
 using namespace dds::core::policy;
 
+dds::core::cond::GuardCondition stop_condition;
+
 
 int publisher_message(string& username, DataWriter<ChatMessage>& message_writer,
         DataReader<ChatUser>& user_reader)
@@ -47,7 +49,8 @@ int publisher_message(string& username, DataWriter<ChatMessage>& message_writer,
             // write
             message_writer.write(instance);
 
-        } else if (command == "list") {
+        }
+        else if (command == "list") {
 
             LoanedSamples<ChatUser> samples = user_reader.read();
             for (auto sampleIt = samples.begin(); sampleIt != samples.end(); sampleIt++) {
@@ -57,6 +60,10 @@ int publisher_message(string& username, DataWriter<ChatMessage>& message_writer,
                     }
                 }
             }
+        } else if (command == "exit") {
+
+            stop_condition.trigger_value(true);
+            break;
 
         } else {
             cout << "___Unsupported command" << endl;
@@ -71,6 +78,7 @@ int subscriber_message(DataReader<ChatMessage>& message_reader)
     ReadCondition read_condition(message_reader, DataState::any());
     WaitSet waitset;
     waitset.attach_condition(read_condition);
+    waitset.attach_condition(stop_condition);
 
     while (true) {
         WaitSet::ConditionSeq active_conditions = waitset.wait(dds::core::Duration(60));
@@ -87,6 +95,8 @@ int subscriber_message(DataReader<ChatMessage>& message_reader)
                         cout << sampleIt->data().fromUser() << ": " << sampleIt->data().message() << endl;
                     }
                 }
+            } else if (active_conditions[c] == stop_condition) {
+                return 0;
             }
         }
     }
@@ -106,12 +116,13 @@ int publisher_userInfo(DataWriter<ChatUser>& user_writer, string& user, string& 
     dds::core::InstanceHandle handle = user_writer.register_instance(instance);
     user_writer.write(instance);
 
-    //while (true) {
-        rti::util::sleep(dds::core::Duration(10));
-        // if exit
-        user_writer.unregister_instance(handle);
-    //    break;
-    //}
+    while (true) {
+        rti::util::sleep(dds::core::Duration(5));
+        if (stop_condition.trigger_value() == true) {
+            user_writer.unregister_instance(handle);
+            break;
+        }
+    }
     return 0;
 }
 
