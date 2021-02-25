@@ -16,6 +16,9 @@ using namespace dds::sub;
 using namespace dds::sub::status;
 using namespace dds::sub::cond;
 using namespace dds::core::cond;
+using namespace dds::pub::qos;
+using namespace dds::sub::qos;
+using namespace dds::core::policy;
 
 
 int publisher_message(string& username, DataWriter<ChatMessage> message_writer)
@@ -37,6 +40,7 @@ int publisher_message(string& username, DataWriter<ChatMessage> message_writer)
 
             instance.fromUser(username);
             instance.toUser(destination);
+            instance.toGroup(destination);
             instance.message(message);
 
             // write
@@ -114,19 +118,37 @@ int main(int argc, char* argv[])
         Topic<ChatUser> userInfo_topic(participant, userInfo_topic_name);
         Topic<ChatMessage> message_topic(participant, message_topic_name);
 
+        DataWriter<ChatUser> user_writer(Publisher(participant), userInfo_topic,
+            qos_provider->datawriter_qos("Chat_Library::ChatUser_Profile"));
+
         DataReader<ChatUser> user_reader(Subscriber(participant), userInfo_topic,
                 qos_provider->datareader_qos("Chat_Library::ChatUser_Profile"));
         
+        vector<string> partition_names = { group };
+
+        PublisherQos publisher_qos = dds::core::QosProvider::Default().publisher_qos();
+        Partition pub_partition = publisher_qos.policy<Partition>();
+        pub_partition.name(partition_names);
+        publisher_qos << pub_partition;
+        Publisher message_publisher(participant, publisher_qos);
+
+        DataWriter<ChatMessage> message_writer(message_publisher, message_topic,
+                qos_provider->datawriter_qos("Chat_Library::ChatMessage_Profile"));
+
+        // CFT
         vector<string> parameters = { "'" + username + "'", "'" + group + "'" };
         ContentFilteredTopic<ChatMessage> cft_message_topic(message_topic, "Message_CFT",
                 Filter("toUser MATCH %0 or toGroup MATCH %1", parameters));
-        DataReader<ChatMessage> message_reader(Subscriber(participant), cft_message_topic,
+        
+        SubscriberQos subscriber_qos = dds::core::QosProvider::Default().subscriber_qos();
+        Partition sub_partition = subscriber_qos.policy<Partition>();
+        sub_partition.name(partition_names);
+        subscriber_qos << sub_partition;
+        Subscriber message_subscriber(participant, subscriber_qos);
+
+        DataReader<ChatMessage> message_reader(message_subscriber, cft_message_topic,
                 qos_provider->datareader_qos("Chat_Library::ChatMessage_Profile"));
 
-        DataWriter<ChatUser> user_writer(Publisher(participant), userInfo_topic,
-                qos_provider->datawriter_qos("Chat_Library::ChatUser_Profile"));
-        DataWriter<ChatMessage> message_writer(Publisher(participant), message_topic,
-                qos_provider->datawriter_qos("Chat_Library::ChatMessage_Profile"));
 
         // create threads
         thread subscriber_thread_userInfo(subscriber_userInfo);
