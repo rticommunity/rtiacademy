@@ -116,7 +116,11 @@ int main(int argc, char* argv[])
 
         DataReader<ChatUser> user_reader(Subscriber(participant), userInfo_topic,
                 qos_provider->datareader_qos("Chat_Library::ChatUser_Profile"));
-        DataReader<ChatMessage> message_reader(Subscriber(participant), message_topic,
+        
+        vector<string> parameters = { "'" + username + "'", "'" + group + "'" };
+        ContentFilteredTopic<ChatMessage> cft_message_topic(message_topic, "Message_CFT",
+                Filter("toUser MATCH %0 or toGroup MATCH %1", parameters));
+        DataReader<ChatMessage> message_reader(Subscriber(participant), cft_message_topic,
                 qos_provider->datareader_qos("Chat_Library::ChatMessage_Profile"));
 
         DataWriter<ChatUser> user_writer(Publisher(participant), userInfo_topic,
