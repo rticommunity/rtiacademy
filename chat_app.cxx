@@ -21,7 +21,7 @@ using namespace dds::sub::qos;
 using namespace dds::core::policy;
 
 
-int publisher_message(string& username, DataWriter<ChatMessage> message_writer)
+int publisher_message(string& username, DataWriter<ChatMessage>& message_writer)
 {
     while (true) {
         string input, command;
@@ -80,8 +80,25 @@ int subscriber_message(DataReader<ChatMessage>& message_reader)
     return 0;
 }
 
-int publisher_userInfo()
+int publisher_userInfo(DataWriter<ChatUser>& user_writer, string& user, string& group,
+        string& first, string& last)
 {
+    ChatUser instance;
+
+    instance.username(user);
+    instance.group(group);
+    instance.firstName(first);
+    instance.lastName(last);
+
+    dds::core::InstanceHandle handle = user_writer.register_instance(instance);
+    user_writer.write(instance);
+
+    //while (true) {
+        rti::util::sleep(dds::core::Duration(10));
+        // if exit
+        user_writer.unregister_instance(handle);
+        break;
+    //}
     return 0;
 }
 
@@ -153,7 +170,8 @@ int main(int argc, char* argv[])
         // create threads
         thread subscriber_thread_userInfo(subscriber_userInfo);
         thread subscriber_thread_message(subscriber_message, message_reader);
-        thread publisher_thread_userInfo(publisher_userInfo);
+        thread publisher_thread_userInfo(publisher_userInfo, user_writer,
+            username, group, firstName, lastName);
         publisher_message(username, message_writer);
 
         // wait for threads to finish
