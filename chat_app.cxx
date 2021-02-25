@@ -21,7 +21,8 @@ using namespace dds::sub::qos;
 using namespace dds::core::policy;
 
 
-int publisher_message(string& username, DataWriter<ChatMessage>& message_writer)
+int publisher_message(string& username, DataWriter<ChatMessage>& message_writer,
+        DataReader<ChatUser>& user_reader)
 {
     while (true) {
         string input, command;
@@ -46,6 +47,17 @@ int publisher_message(string& username, DataWriter<ChatMessage>& message_writer)
             // write
             message_writer.write(instance);
 
+        } else if (command == "list") {
+
+            LoanedSamples<ChatUser> samples = user_reader.read();
+            for (auto sampleIt = samples.begin(); sampleIt != samples.end(); sampleIt++) {
+                if (sampleIt->info().valid()) {
+                    if (sampleIt->info().state().instance_state() == InstanceState::alive()) {
+                        cout << "# " << sampleIt->data().username() << " " << sampleIt->data().group() << endl;
+                    }
+                }
+            }
+
         } else {
             cout << "___Unsupported command" << endl;
         }
@@ -66,6 +78,7 @@ int subscriber_message(DataReader<ChatMessage>& message_reader)
             cout << "Timeout; no conditions were triggered\n";
             continue;
         }
+
         for (int c = 0; c < active_conditions.size(); c++) {
             if (active_conditions[c] == read_condition) {
                 LoanedSamples<ChatMessage> samples = message_reader.take();
@@ -97,13 +110,14 @@ int publisher_userInfo(DataWriter<ChatUser>& user_writer, string& user, string& 
         rti::util::sleep(dds::core::Duration(10));
         // if exit
         user_writer.unregister_instance(handle);
-        break;
+    //    break;
     //}
     return 0;
 }
 
 int subscriber_userInfo()
 {
+
     return 0;
 }
 
@@ -172,7 +186,7 @@ int main(int argc, char* argv[])
         thread subscriber_thread_message(subscriber_message, message_reader);
         thread publisher_thread_userInfo(publisher_userInfo, user_writer,
             username, group, firstName, lastName);
-        publisher_message(username, message_writer);
+        publisher_message(username, message_writer, user_reader);
 
         // wait for threads to finish
         publisher_thread_userInfo.join();
