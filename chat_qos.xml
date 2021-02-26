@@ -25,12 +25,24 @@
           <subscription_name>
             <name>ChatUser_Reader</name>
           </subscription_name>
+          <liveliness>
+            <lease_duration>
+              <sec>3</sec>
+              <nanosec>0</nanosec>
+            </lease_duration>
+          </liveliness>
         </datareader_qos>
         
         <datawriter_qos>
           <publication_name>
             <name>ChatUser_Writer</name>
           </publication_name>
+          <liveliness>
+            <lease_duration>
+              <sec>2</sec>
+              <nanosec>0</nanosec>
+            </lease_duration>
+          </liveliness>
         </datawriter_qos>
         
       </qos_profile>

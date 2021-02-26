@@ -51,7 +51,7 @@ int publisher_message(string& username, DataWriter<ChatMessage>& message_writer,
 
         }
         else if (command == "list") {
-
+            
             LoanedSamples<ChatUser> samples = user_reader.read();
             for (auto sampleIt = samples.begin(); sampleIt != samples.end(); sampleIt++) {
                 if (sampleIt->info().valid()) {
@@ -126,9 +126,37 @@ int publisher_userInfo(DataWriter<ChatUser>& user_writer, string& user, string& 
     return 0;
 }
 
-int subscriber_userInfo()
+int subscriber_userInfo(DataReader<ChatUser>& user_reader)
 {
+    ReadCondition read_condition(user_reader, DataState(SampleState::any(), ViewState::any(),
+        InstanceState::not_alive_mask()));
+    WaitSet waitset;
+    waitset.attach_condition(read_condition);
+    waitset.attach_condition(stop_condition);
 
+    while (true) {
+        WaitSet::ConditionSeq active_conditions = waitset.wait(dds::core::Duration(60));
+        if (active_conditions.size() == 0) {
+            cout << "Timeout; no conditions were triggered\n";
+            continue;
+        }
+
+        for (int c = 0; c < active_conditions.size(); c++) {
+            if (active_conditions[c] == read_condition) {
+                LoanedSamples<ChatUser> samples = user_reader.select().condition(read_condition).take();
+                for (auto sampleIt = samples.begin(); sampleIt != samples.end(); sampleIt++) {
+                    if (sampleIt->info().valid()) {
+                        if (sampleIt->info().state().instance_state() == InstanceState::not_alive_no_writers()) {
+                            cout << sampleIt->data().username() << ": has been dropped\n";
+                        }
+                    }
+                }
+            }
+            else if (active_conditions[c] == stop_condition) {
+                return 0;
+            }
+        }
+    }
     return 0;
 }
 
@@ -193,7 +221,7 @@ int main(int argc, char* argv[])
 
 
         // create threads
-        thread subscriber_thread_userInfo(subscriber_userInfo);
+        thread subscriber_thread_userInfo(subscriber_userInfo, user_reader);
         thread subscriber_thread_message(subscriber_message, message_reader);
         thread publisher_thread_userInfo(publisher_userInfo, user_writer,
             username, group, firstName, lastName);
