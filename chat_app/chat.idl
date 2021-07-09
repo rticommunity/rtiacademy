@@ -1,0 +1,59 @@
+
+const long MAX_NAME_SIZE = 128;
+const long MAX_MSG_SIZE = 512;
+
+
+struct ChatUser {
+@key        string<MAX_NAME_SIZE> username;
+            string<MAX_NAME_SIZE> group;
+@optional   string<MAX_NAME_SIZE> firstName;
+@optional   string<MAX_NAME_SIZE> lastName;
+};
+
+
+struct ChatMessage {
+@key        string<MAX_NAME_SIZE> fromUser;
+@key        string<MAX_NAME_SIZE> toUser;
+@key        string<MAX_NAME_SIZE> toGroup;
+            string<MAX_MSG_SIZE> message;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
