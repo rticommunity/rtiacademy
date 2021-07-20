@@ -1,0 +1,88 @@
+#
+# (c) 2021 Copyright, Real-Time Innovations, Inc.  All rights reserved.
+#
+#  RTI grants Licensee a license to use, modify, compile, and create derivative
+#  works of the Software.  Licensee has the right to distribute object form
+#  only for use with RTI products.  The Software is provided "as is", with no
+#  warranty of any type, including any warranty for fitness for any purpose.
+#  RTI is under no obligation to maintain or support the Software.  RTI shall
+#  not be liable for any incidental or consequential damages arising out of the
+#  use or inability to use the software.
+#
+cmake_minimum_required(VERSION 3.7)
+project (ChatApp)
+
+# Find RTI Connext dependencies
+set(CMAKE_MODULE_PATH
+    ${CMAKE_MODULE_PATH}
+    "${CMAKE_SOURCE_DIR}/cmake"
+    # Set the path to where FindRTIConnextDDS.cmake is located
+    "${CONNEXTDDS_DIR}/resource/cmake" # Cmake Argument
+    "$ENV{NDDSHOME}/resource/cmake" # Environment var
+    "${NDDSHOME}/resource/cmake" # Passing the variable
+)
+
+find_package(
+    RTIConnextDDS "6.1.0"
+    REQUIRED
+    COMPONENTS
+        core
+)
+
+# Flags for code generation
+set(CODEGEN_FLAGS UNBOUNDED)
+set(IDL_GEN_CODE_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/build/${RTI_ARCH}/${CMAKE_BUILD_TYPE}/generated/")
+# Include the CodegenRTIConnextDDS cmake module
+include(CodegenRTIConnextDDS)
+
+connextdds_rtiddsgen_run(
+    IDL_FILE
+      "${CMAKE_SOURCE_DIR}/chat.idl"
+    LANG
+      "C++11"
+    OUTPUT_DIRECTORY
+      "${IDL_GEN_CODE_OUTPUT_DIR}"
+    INCLUDE_DIRS
+      "${CMAKE_SOURCE_DIR}"
+    ${CODEGEN_FLAGS}
+)
+
+add_custom_command(
+    OUTPUT ${CMAKE_BINARY_DIR}/chat_qos.xml
+    COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_SOURCE_DIR}/chat_qos.xml"
+        "${CMAKE_BINARY_DIR}/chat_qos.xml"
+    DEPENDS "${CMAKE_SOURCE_DIR}/chat_qos.xml"
+)
+
+add_custom_target(
+    copy_config_files
+    DEPENDS
+        "${CMAKE_BINARY_DIR}/chat_qos.xml"
+)
+message("chat: ${chat_CXX11_SOURCES}")
+# Main application
+add_executable(
+    chat_app
+    "${chat_CXX11_SOURCES}"
+    "${CMAKE_SOURCE_DIR}/chat_app.cxx"
+)
+
+
+target_include_directories(chat_app
+  PRIVATE
+    "${IDL_GEN_CODE_OUTPUT_DIR}"
+)
+
+
+set_target_properties(
+    chat_app
+    PROPERTIES CXX_STANDARD 11)
+
+add_dependencies(chat_app copy_config_files)
+
+target_link_libraries(
+    chat_app
+    RTIConnextDDS::cpp2_api
+    ${CONNEXTDDS_EXTERNAL_LIBS}
+)

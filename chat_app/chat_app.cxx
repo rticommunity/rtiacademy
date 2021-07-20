@@ -103,8 +103,8 @@ int subscriber_message(DataReader<ChatMessage>& message_reader)
     return 0;
 }
 
-int publisher_userInfo(DataWriter<ChatUser>& user_writer, string& user, string& group,
-        string& first, string& last)
+int publisher_userInfo(DataWriter<ChatUser>& user_writer, string user, string group,
+        string first, string last)
 {
     ChatUser instance;
 
@@ -221,9 +221,9 @@ int main(int argc, char* argv[])
 
 
         // create threads
-        thread subscriber_thread_userInfo(subscriber_userInfo, user_reader);
-        thread subscriber_thread_message(subscriber_message, message_reader);
-        thread publisher_thread_userInfo(publisher_userInfo, user_writer,
+        thread subscriber_thread_userInfo(subscriber_userInfo,  std::ref(user_reader));
+        thread subscriber_thread_message(subscriber_message,  std::ref(message_reader));
+        thread publisher_thread_userInfo(publisher_userInfo,  std::ref(user_writer),
             username, group, firstName, lastName);
         publisher_message(username, message_writer, user_reader);
 
