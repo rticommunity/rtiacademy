@@ -26,7 +26,7 @@ rtiddsgen chat.idl -language C++11 -create typefiles -unboundedSupport
 There are several tags, corresponding to each coding video:
 *chat-app_video8* to *chat-app_video17*
 
-You only have to checkout the required tag when watching the video to have the same code shown in it.
+You only have to checkout the required tag when watching the video.
 
 ## Building using CMake
 
