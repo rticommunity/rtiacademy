@@ -21,5 +21,3 @@ You can use the following commands:
 - send user|group \<message\>
 - list
 - exit
-
-

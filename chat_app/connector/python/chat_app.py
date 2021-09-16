@@ -138,4 +138,3 @@ with rti.open_connector(
     user_output.instance.set_string("username", args.user)
 
     user_output.write(action="unregister")
-
