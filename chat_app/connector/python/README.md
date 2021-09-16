@@ -18,7 +18,7 @@ python chat_app.py user group firstname lastname
 
 You can use the following commands:
 
-- send user|group <message>
+- send user|group \<message\>
 - list
 - exit
 
