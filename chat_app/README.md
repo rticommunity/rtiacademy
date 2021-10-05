@@ -9,7 +9,7 @@ topics and the Quality of Service best suited for a scalable distributed applica
 
 - Connext 6.0.1 or 6.1.0
 
-## versions
+## Versions
 
 Here you can find different versions of this application depending on the programming language used to
 implement them. Each implementation has its own folder named as the programming language used.
