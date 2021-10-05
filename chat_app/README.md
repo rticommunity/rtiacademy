@@ -8,27 +8,10 @@ topics and the Quality of Service best suited for a scalable distributed applica
 ## Prerequisites
 
 - Connext 6.0.1 or 6.1.0
-- Windows 10
-- Visual Studio 2015
 
-## Build the example
+## versions
 
-This example contains the project files to make it work on Visual Studio 2015.
+Here you can find different versions of this application depending on the programming language used to
+implement them. Each implementation has its own folder named as the programming language used.
 
-Before compiling the project, you have to run Code Generator to create the C++11 files from the idl (chat.idl). You have to set the unbounded support flag.
-
-```bash
-rtiddsgen chat.idl -language C++11 -create typefiles -unboundedSupport
-```
-
-## How to use it
-
-There are several tags, corresponding to each coding video:
-*chat-app_video8* to *chat-app_video17*
-
-You only have to checkout the required tag when watching the video.
-
-## Building using CMake
-
-There is a separate branch that allows building the last version of the code with
-CMake: [chat-app_cmake](https://github.com/rticommunity/rtiacademy/tree/chat-app_cmake)
+Please, take a look to the specific README files inside each folder to see how to build and run the example.
