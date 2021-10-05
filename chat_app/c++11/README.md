@@ -6,7 +6,7 @@ This is the C++ 11 example that builds the command-line chat application using C
 
 ## Prerequisites
 
-- Connext 6.0.1 or 6.1.0
+- Connext 6.1.0
 - Windows 10
 - Visual Studio 2015
 

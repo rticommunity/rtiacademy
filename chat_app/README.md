@@ -7,11 +7,11 @@ topics and the Quality of Service best suited for a scalable distributed applica
 
 ## Prerequisites
 
-- Connext 6.0.1 or 6.1.0
+- Connext 6.1.0
 
 ## Versions
 
 Here you can find different versions of this application depending on the programming language used to
-implement them. Each implementation has its own folder named as the programming language used.
+implement them. Each implementation has its own folder named.
 
 Please, take a look to the specific README files inside each folder to see how to build and run the example.
