@@ -4,9 +4,10 @@ In this directory you will find the code for the **_Writing a Connext DDS Chat A
 
 # Prerequisites
 
-- Python interpreter
-- RTI Connext 6.1.0
-- RTI Connector
+- Python interpreter (see RTI Connector Supported Platforms https://community.rti.com/static/documentation/connector/1.1.0/api/python/release_notes.html)
+- RTI Connector for Python
+
+You can find how to install RTI Connector on https://community.rti.com/static/documentation/connector/1.1.0/api/python/getting_started.html#installing-rti-connector-for-python
 
 # How to use it
 

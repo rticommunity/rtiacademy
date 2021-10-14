@@ -19,18 +19,30 @@ file_path = os_path.dirname(os_path.realpath(__file__))
 
 parser = argparse.ArgumentParser(description='DDS Chat Application')
 
-parser.add_argument('user', help='User Name')
-parser.add_argument('group', help='Group Name')
-parser.add_argument('firstname', help='First Name')
-parser.add_argument('lastname', help='Last Name')
+parser.add_argument('user', help='User Name', type=str)
+parser.add_argument('group', help='Group Name', type=str)
+parser.add_argument('-f', '--firstname', help='First Name', type=str, default='')
+parser.add_argument('-l', '--lastname', help='Last Name', type=str, default='')
 
 args = parser.parse_args()
 
 os.environ['user'] = str(args.user)
 os.environ['group'] = str(args.group)
 
+print("Welcome to DDS Chat App using RTI Connector for Python")
+print("You can use the following commands:")
+print("    send user|group message: Send the message to the user or group.")
+print("    list:                    List all users in all groups.")
+print("    exit:                    Exit the DDS Chat Application")
+print("")
+
+# It is important to import Connector after the environment
+# variables used in the XML file have been set.
 import rticonnextdds_connector as rti
 
+# This lock is needed because some Connector operations are not
+# thread safe. You can read about this on
+# https://community.rti.com/static/documentation/connector/1.1.0/api/python/threading.html
 lock = threading.RLock()
 finish_thread = False
 
@@ -84,23 +96,20 @@ def command_task(user, message_output, user_input):
                     if sample.info['instance_state'] == 'ALIVE':
                         data = sample.get_dictionary()
                         print("#user/group:" + data['username'] + "/" + data['group'])
-        else:
-            command = value.split(maxsplit=1)
-            if len(command):
-                if command[0] == "send":
-                    with lock:
-                        destination = command[1].split(maxsplit=1)
+        elif value.startswith("send "):
+            destination = value.split(maxsplit=2)
+            if len(destination) == 3:
+                with lock:
+                    message_output.instance.set_string("fromUser", user)
+                    message_output.instance.set_string("toUser", destination[1])
+                    message_output.instance.set_string("toGroup", destination[1])
+                    message_output.instance.set_string("message", destination[2])
 
-                        message_output.instance.set_string("fromUser", user)
-                        message_output.instance.set_string("toUser", destination[0])
-                        message_output.instance.set_string("toGroup", destination[0])
-                        message_output.instance.set_string("message", destination[1])
-
-                        message_output.write()
-                else:
-                    print("Wrong command\n")
+                    message_output.write()
             else:
-                print("Wrong command\n")
+                print("Wrong usage. Use \"send user|group message\"\n")
+        else:
+            print("Unknown command\n")
 
 with rti.open_connector(
     config_name="ChatParticipant_Library::ChatParticipant",
@@ -115,12 +124,13 @@ with rti.open_connector(
     #register instance
     user_output.instance.set_string("username", args.user)
     user_output.instance.set_string("group", args.group)
-    user_output.instance.set_string("firstName", args.firstname)
-    user_output.instance.set_string("lastName", args.lastname)
+    if args.firstname != "":
+        user_output.instance.set_string("firstName", args.firstname)
+    if args.lastname != "":
+        user_output.instance.set_string("lastName", args.lastname)
 
     user_output.write()
 
-    #sleep(5)
     t1 = threading.Thread(target=command_task, args=(args.user, message_output, user_input))
     t1.start()
 
