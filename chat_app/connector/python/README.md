@@ -11,7 +11,7 @@ You can find how to install RTI Connector on https://community.rti.com/static/do
 
 # How to use it
 
-You can run the program with the following comand
+You can run the program with the following command
 
 ```bash
 python chat_app.py user group firstname lastname
