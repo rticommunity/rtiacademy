@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-(c) 2021-2021 Copyright, Real-Time Innovations.  All rights reserved.
-No duplications, whole or partial, manual or electronic, may be made
-without express written permission.  Any such copies, or revisions thereof,
-must display this notice unaltered.
-This code contains trade secrets of Real-Time Innovations, Inc.
+ (c) 2021 Copyright, Real-Time Innovations, Inc.  All rights reserved.
+ RTI grants Licensee a license to use, modify, compile, and create derivative
+ works of the Software solely in combination with RTI Connext DDS. Licensee
+ may redistribute copies of the Software provided that all such copies are
+ subject to this License. The Software is provided "as is", with no warranty
+ of any type, including any warranty for fitness for any purpose. RTI is 
+ under no obligation to maintain or support the Software. RTI shall not be 
+ liable for any incidental or consequential damages arising out of the use or
+ inability to use the Software. For purposes of clarity, nothing in this 
+ License prevents Licensee from using alternate versions of DDS, provided that
+ Licensee may not combine or link such alternate versions of DDS with the
+ Software.
 -->
 
 <dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/6.1.0/rti_dds_profiles.xsd" version="6.1.0">
