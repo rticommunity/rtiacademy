@@ -2,12 +2,8 @@
 
 In this directory you will find the code for the **_Writing a Connext DDS Chat Application_** course.
 
-This example builds a command-line chat application using Connext DDS. It defines the types, the
+This example builds a chat application using Connext DDS. It defines the types, the
 topics and the Quality of Service best suited for a scalable distributed application.
-
-## Prerequisites
-
-- Connext 6.1.0
 
 ## Versions
 
