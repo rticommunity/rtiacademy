@@ -4,6 +4,17 @@ In this directory you will find the code for the Writing a Connext DDS Chat Appl
 
 This is the Python example that runs the GUI chat application using Connext DDS.
 
+## Tags
+
+There are two versions of this code, available via tags in this repository, as follows:
+
+| Version | Tag                   | Description                                                                                         |
+|---------|-----------------------|-----------------------------------------------------------------------------------------------------|
+| Full    | chat-app-python_full  | Full implementation of the entire application, corresponds to the end of the course.                |
+| Bare    | chat-app-python_bare  | Bare implementation of the DDS logic, corresponds to the start of the coding section in the course. |
+
+*Note: the default code visible on the branch is the fully-implemented version.*
+
 ## Setup
 
 ### Prerequisites
