@@ -4,6 +4,13 @@ In this directory you will find the code for the Writing a Connext DDS Chat Appl
 
 This is the Python example that runs the GUI chat application using Connext DDS.
 
+## Folder structure
+
+There are two versions of the code, each in its respective folder:
+
+- `./template`: contains an unimplemented version of the DDS application. The main application (including GUI) do execute, but there is no DDS functionality. This provides the same starting point used in the video course.
+- `./final`: contains the full implementation with all the features working. 
+
 ## Setup
 
 ### Prerequisites
